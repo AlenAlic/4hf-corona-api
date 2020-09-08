@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class="row">
+    {% with url=url_for("admin.index"), title="Database", image="db.png" %}
+        {% include "_dashboard_page.html" %}
+    {% endwith %}
+    {% with url=url_for("email.index"), title="E-mails", image="email.png" %}
+        {% include "_dashboard_page.html" %}
+    {% endwith %}
+</div>
+{% endblock %}

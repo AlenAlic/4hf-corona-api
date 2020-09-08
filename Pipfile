@@ -1,0 +1,33 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[scripts]
+hello = "echo hello"
+mailserver = "python -m smtpd -n -c DebuggingServer localhost:8025"
+
+[dev-packages]
+
+[packages]
+flask = "*"
+python-dotenv = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+flask-login = "*"
+flask-mail = "*"
+pyjwt = "*"
+flask-admin = "*"
+flask-restx = "*"
+flask-wtf = "*"
+pymysql = "*"
+flask-cors = "*"
+pywebpush = "*"
+flask-socketio = "*"
+redis = "*"
+eventlet = "*"
+rq = "*"
+gunicorn = "*"
+
+[requires]
+python_version = "3.6"

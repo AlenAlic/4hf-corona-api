@@ -1,0 +1,16 @@
+# common
+node_modules
+/dist
+/venv
+__pycache__
+/.venv
+
+# local env files
+.env.local
+.env.*.local
+.env
+.env.*
+
+# Editor directories and files
+.idea
+.vscode
