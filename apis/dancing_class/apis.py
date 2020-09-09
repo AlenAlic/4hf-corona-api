@@ -3,13 +3,14 @@ from models import login_required
 from models import DancingClass, Person, DancingClassPerson, DancingClassCouple
 from ext import db
 import dateutil.parser as datetime_parser
+from sqlalchemy import desc
 
 
 api = Namespace("dancing_class", description="Classes")
 
 
 def all_dancing_classes():
-    return [d.json() for d in DancingClass.query.order_by(DancingClass.datetime).all()]
+    return [d.json() for d in DancingClass.query.order_by(desc(DancingClass.datetime)).all()]
 
 
 @api.route("/")
