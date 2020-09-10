@@ -1,0 +1,228 @@
+#!/bin/bash
+
+
+clear
+export FOLDER=4hf-corona
+export API_FOLDER=$FOLDER/4hf-corona-api
+export SECRET_KEY=$(python3 -c "import uuid; print(uuid.uuid4().hex)")
+export PORT=4045
+export SUPERVISOR=corona_4hf
+
+export DOMAIN=alenalic.nl
+export SUBDOMAIN=4hfcorona.$DOMAIN
+export API_SUBDOMAIN=api.$SUBDOMAIN;
+
+export EMAIL_ADDRESS=$EMAIL_ADDRESS
+export EMAIL_PASSWORD=$EMAIL_PASSWORD
+
+export DB=4hf_corona
+export DB_USERNAME=$DB
+export DB_PASSWORD=$(python3 -c "import uuid; print(uuid.uuid4().hex)")
+
+echo "SETTINGS"
+echo "========="
+echo "folder:"
+echo $FOLDER
+echo "secret key:"
+echo $SECRET_KEY
+echo "port:"
+echo $PORT
+echo "========="
+echo ""
+
+echo "DOMAINS"
+echo "========="
+echo "domain:"
+echo $DOMAIN
+echo "subdomain:"
+echo $SUBDOMAIN
+echo "api subdomain:"
+echo $API_SUBDOMAIN
+echo "========="
+echo ""
+
+echo "DATABASE"
+echo "========="
+echo "db:"
+echo $DB
+echo "username:"
+echo $DB_USERNAME
+echo "password:"
+echo $DB_PASSWORD
+echo "========="
+echo ""
+
+echo "install site? (y/n)"
+read continue
+if [[ $continue = "y" ]]
+then
+
+
+echo "Installing SSL certificate===================="
+sudo certbot certonly --nginx -d $SUBDOMAIN -d $API_SUBDOMAIN
+echo "Installing SSL certificate complete==========="
+
+
+echo "Installing git repository====================="
+cd
+mkdir $FOLDER
+cd $FOLDER
+git clone https://github.com/AlenAlic/4hf-corona-api
+echo "Installing git repository complete============"
+
+
+echo "Installing venv==============================="
+cd && cd $API_FOLDER
+python3 -m venv venv
+source venv/bin/activate
+pip install pip --upgrade
+pip install setuptools --upgrade
+pip install pipenv
+pipenv lock -r > requirements.txt
+pip install -r requirements.txt
+pip install gunicorn
+deactivate
+echo "Installing venv complete======================"
+
+
+echo "Setting environment variables================="
+cd && cd $API_FOLDER
+bash -c 'cat > .env' << EOL
+SECRET_KEY=$SECRET_KEY
+DB_USERNAME=$DB_USERNAME
+DB_PASSWORD=$DB_PASSWORD
+DB_NAME=$DB
+#MAIL_DEFAULT_SENDER=$EMAIL_ADDRESS
+PRETTY_URL=$SUBDOMAIN
+ALLOWED_URLS=["https://$SUBDOMAIN"]
+#MAIL_SERVER=$DOMAIN
+#MAIL_PORT=587
+#MAIL_USE_TLS=1
+#MAIL_USERNAME=$EMAIL_ADDRESS
+#MAIL_PASSWORD=$EMAIL_PASSWORD
+EOL
+echo "Setting environment variables done============"
+
+
+echo "Create database and user======================"
+sudo mysql<<EOF
+CREATE DATABASE $DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON $DB_USERNAME.* TO '$DB_USERNAME'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+echo "Created database and user====================="
+
+
+echo "Migrating database============================"
+cd && cd $API_FOLDER
+source venv/bin/activate
+flask db upgrade
+deactivate
+echo "Database migration complete==================="
+
+
+echo "Setting up supervisor========================="
+sudo -E bash -c 'cat > /etc/supervisor/conf.d/$SUPERVISOR.conf' << EOL
+[program:$SUPERVISOR]
+command=/home/$USER/$API_FOLDER/venv/bin/gunicorn -b 127.0.0.1:$PORT -w 3 run:app
+directory=/home/$USER/$API_FOLDER
+user=$USER
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+EOL
+sudo supervisorctl reload
+echo "Setting up supervisor complete================"
+
+
+echo "Setting up nginx=============================="
+sudo -E bash -c 'cat > /etc/nginx/conf.d/$API_SUBDOMAIN.conf' << EOL
+server {
+    listen 443 ssl http2;
+    server_name $API_SUBDOMAIN;
+    location / {
+        proxy_pass http://127.0.0.1:$PORT;
+        proxy_redirect off;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+    access_log /var/log/$API_SUBDOMAIN.access.log;
+    error_log /var/log/$API_SUBDOMAIN.error.log;
+    ssl_certificate /etc/letsencrypt/live/$SUBDOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$SUBDOMAIN/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    ssl_ecdh_curve secp521r1:secp384r1:prime256v1;
+}
+server {
+    server_name $API_SUBDOMAIN;
+    return 301 https://\$host\$request_uri;
+}
+EOL
+sudo service nginx reload
+echo "Setting up nginx complete====================="
+
+
+echo "Creating update script========================"
+cd && cd $API_FOLDER
+bash -c 'cat > scripts/update' << EOL
+cd && cd $API_FOLDER
+echo "Creating database backup===="
+./cron/weekly
+echo "========================Done"
+echo "Checking out new version===="
+git pull
+echo "========================Done"
+echo "Installing requirements====="
+source venv/bin/activate
+pipenv lock -r > requirements.txt
+pip install -r requirements.txt
+echo "========================Done"
+echo "Migrating Database=========="
+export FLASK_APP=run.py
+flask db upgrade
+deactivate
+echo "========================Done"
+echo "Restarting Services========="
+sudo supervisorctl restart $SUPERVISOR
+sudo systemctl reload nginx
+echo "========================Done"
+cd
+EOL
+echo "Created update script========================="
+
+
+echo "Creating backup folder========================"
+cd && cd $API_FOLDER
+mkdir -p backups/weekly
+echo "Created backup folder========================="
+
+
+echo "Creating cronjob files========================"
+cd && cd $API_FOLDER
+mkdir cron
+cd cron
+bash -c 'cat > weekly' << EOL
+#! /bin/bash
+cd
+mysqldump --login-path=$FOLDER $DB | xz -z > "$FOLDER/backups/weekly/backup-\$(date +%Y%m%d-%H%M).db.xz";
+EOL
+sudo chmod 774 weekly
+echo "Created cronjob files========================="
+
+
+echo "Creating update scripts======================="
+cd
+echo "alias 4hf-corona-api-update='cd && source $API_FOLDER/scripts/update'" >> .bashrc
+source .bashrc
+echo "Created update scripts========================"
+
+
+cd
+else
+echo "Skipping installation."
+fi
+cd
