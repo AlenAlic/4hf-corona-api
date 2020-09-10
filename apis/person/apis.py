@@ -73,5 +73,17 @@ class PersonSpecific(Resource):
             if "student_number" in api.payload:
                 person.student_number = api.payload["student_number"]
             db.session.commit()
-            return all_persons()
+            return person.json()
+        return abort(404)
+
+    @api.response(200, "Person")
+    @api.response(404, "Person not found")
+    @login_required
+    def delete(self, person_id):
+        """Delete person"""
+        person: Person = Person.query.filter(Person.id == person_id).first()
+        if person:
+            db.session.delete(person)
+            db.session.commit()
+            return
         return abort(404)
