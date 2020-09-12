@@ -17,7 +17,7 @@ class DancingClassCouple(db.Model, TrackModifications):
     partner = db.relationship("DancingClassPerson", foreign_keys=partner_id)
 
     def __repr__(self):
-        return f"{self.dancing_class_id}-{self.person_id}"
+        return f"{self.person} - {self.partner}"
 
     def json(self):
         data = {

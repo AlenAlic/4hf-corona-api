@@ -9,8 +9,8 @@ class DancingClass(db.Model, TrackModifications):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    attendees = db.relationship("DancingClassPerson")
-    couples = db.relationship("DancingClassCouple")
+    attendees = db.relationship("DancingClassPerson", cascade="all, delete, delete-orphan")
+    couples = db.relationship("DancingClassCouple", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"{self.name} ({self.datetime_string})"
