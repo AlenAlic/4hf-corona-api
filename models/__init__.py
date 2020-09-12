@@ -9,3 +9,4 @@ from .dancing_class import DancingClass
 from .person import Person
 from .dancing_class_person import DancingClassPerson
 from .dancing_class_couple import DancingClassCouple
+from .couple import Couple
