@@ -7,8 +7,10 @@ from ext import db
 api = Namespace("person", description="People")
 
 
-def all_persons():
-    return [d.json() for d in Person.query.order_by(Person.first_name).all()]
+def all_persons(include_active_partners=False):
+    return [
+        p.json(include_active_partners=include_active_partners) for p in Person.query.order_by(Person.first_name).all()
+    ]
 
 
 @api.route("/")
@@ -18,7 +20,7 @@ class PersonRoot(Resource):
     @login_required
     def get(self):
         """Get all persons"""
-        return all_persons()
+        return all_persons(include_active_partners=True)
 
     @api.response(200, "All dancing classes")
     @api.expect(api.model("DancingClass", {
@@ -38,7 +40,7 @@ class PersonRoot(Resource):
             person.student_number = api.payload["student_number"]
         db.session.add(person)
         db.session.commit()
-        return all_persons()
+        return all_persons(include_active_partners=True)
 
 
 @api.route("/<int:person_id>")
@@ -51,7 +53,7 @@ class PersonSpecific(Resource):
         """Get person"""
         person: Person = Person.query.filter(Person.id == person_id).first()
         if person:
-            return person.json()
+            return person.json(include_active_partners=True)
         return abort(404)
 
     @api.response(200, "Person")
@@ -73,7 +75,7 @@ class PersonSpecific(Resource):
             if "student_number" in api.payload:
                 person.student_number = api.payload["student_number"]
             db.session.commit()
-            return person.json()
+            return person.json(include_active_partners=True)
         return abort(404)
 
     @api.response(200, "Person")
