@@ -5,6 +5,7 @@ from .ping import api as ping
 from .user import api as user
 from .dancing_class import api as dancing_class
 from .person import api as person
+from .couple import api as couple
 
 
 authorizations = {
@@ -22,10 +23,11 @@ api = Api(bp, doc="/doc", authorizations=authorizations, security="bearer",
 
 
 api.add_namespace(auth)
+api.add_namespace(couple)
 api.add_namespace(dancing_class)
 api.add_namespace(person)
-api.add_namespace(ping)
 api.add_namespace(user)
+api.add_namespace(ping)
 
 
 def init_app(app):
