@@ -201,3 +201,22 @@ class DancingClassSpecificPerson(Resource):
             db.session.commit()
             return dancing_class.json(include_attendees=True)
         return abort(404)
+
+
+@api.response(200, "Dancing class")
+@api.route("/<int:dancing_class_id>/couple/<int:dancing_class_couple_id>")
+class DancingClassSpecificCouple(Resource):
+
+    @api.response(404, "Dancing class or couple not found")
+    @login_required
+    def delete(self, dancing_class_id, dancing_class_couple_id):
+        """Delete dancing class couple"""
+        couple: DancingClassCouple = DancingClassCouple.query \
+            .filter(DancingClassCouple.id == dancing_class_couple_id,
+                    DancingClassCouple.dancing_class_id == dancing_class_id).first()
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        if dancing_class and couple:
+            db.session.delete(couple)
+            db.session.commit()
+            return dancing_class.json(include_attendees=True)
+        return abort(404)
