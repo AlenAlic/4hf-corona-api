@@ -165,3 +165,39 @@ class DancingClassSpecificCreateCouple(Resource):
             db.session.commit()
             return dancing_class.json(include_attendees=True)
         return abort(404)
+
+
+@api.response(200, "Dancing class")
+@api.response(404, "Dancing class or person not found")
+@api.route("/<int:dancing_class_id>/attendee/<int:dancing_class_person_id>")
+class DancingClassSpecificPerson(Resource):
+
+    @api.expect(model_dancing_class_person, validate=True)
+    @login_required
+    def put(self, dancing_class_id, dancing_class_person_id):
+        """Update dancing class attendee"""
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        attendee: DancingClassPerson = DancingClassPerson.query\
+            .filter(DancingClassPerson.id == dancing_class_person_id,
+                    DancingClassPerson.dancing_class_id == dancing_class_id).first()
+        person: Person = Person.query.filter(Person.id == api.payload["person_id"]).first()
+        if dancing_class and attendee and person:
+            attendee.person = person
+            if "notes" in api.payload:
+                attendee.notes = api.payload["notes"]
+            db.session.commit()
+            return dancing_class.json(include_attendees=True)
+        return abort(404)
+
+    @login_required
+    def delete(self, dancing_class_id, dancing_class_person_id):
+        """Delete dancing class attendee"""
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        attendee: DancingClassPerson = DancingClassPerson.query \
+            .filter(DancingClassPerson.id == dancing_class_person_id,
+                    DancingClassPerson.dancing_class_id == dancing_class_id).first()
+        if dancing_class and attendee:
+            db.session.delete(attendee)
+            db.session.commit()
+            return dancing_class.json(include_attendees=True)
+        return abort(404)
