@@ -125,17 +125,23 @@ class DancingClassSpecificAddCouple(Resource):
         dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
         couple: Couple = Couple.query.filter(Couple.id == api.payload["couple_id"]).first()
         if dancing_class and couple:
-            dcp_lead = DancingClassPerson()
-            dcp_lead.dancing_class = dancing_class
-            dcp_lead.person = couple.lead
-            dcp_follow = DancingClassPerson()
-            dcp_follow.dancing_class = dancing_class
-            dcp_follow.person = couple.follow
+            dcp_lead = DancingClassPerson.query.filter(DancingClassPerson.dancing_class == dancing_class,
+                                                       DancingClassPerson.person == couple.lead).first()
+            if not dcp_lead:
+                dcp_lead = DancingClassPerson()
+                dcp_lead.dancing_class = dancing_class
+                dcp_lead.person = couple.lead
+                db.session.add(dcp_lead)
+            dcp_follow = DancingClassPerson.query.filter(DancingClassPerson.dancing_class == dancing_class,
+                                                         DancingClassPerson.person == couple.follow).first()
+            if not dcp_follow:
+                dcp_follow = DancingClassPerson()
+                dcp_follow.dancing_class = dancing_class
+                dcp_follow.person = couple.follow
+                db.session.add(dcp_follow)
             dcc = DancingClassCouple()
             dcc.person = dcp_lead
             dcc.partner = dcp_follow
-            db.session.add(dcp_lead)
-            db.session.add(dcp_follow)
             db.session.add(dcc)
             db.session.commit()
             return dancing_class.json(include_attendees=True)
