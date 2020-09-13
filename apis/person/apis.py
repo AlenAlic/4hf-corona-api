@@ -77,7 +77,7 @@ class PersonSpecific(Resource):
             return person.json(include_active_partners=True)
         return abort(404)
 
-    @api.response(200, "Person")
+    @api.response(200, "Person deleted")
     @login_required
     def delete(self, person_id):
         """Delete person"""
