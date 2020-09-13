@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields, abort
 from models import login_required
-from models import DancingClass, Person, DancingClassPerson, DancingClassCouple
+from models import DancingClass, Person, DancingClassPerson, DancingClassCouple, Couple
 from ext import db
 import dateutil.parser as datetime_parser
 from sqlalchemy import desc
@@ -108,6 +108,35 @@ class DancingClassSpecificAddAttendee(Resource):
             if "notes" in api.payload:
                 dcp.notes = api.payload["notes"]
             db.session.add(dcp)
+            db.session.commit()
+            return dancing_class.json(include_attendees=True)
+        return abort(404)
+
+
+@api.route("/<int:dancing_class_id>/add_couple")
+class DancingClassSpecificAddCouple(Resource):
+
+    @api.response(200, "Dancing class")
+    @api.response(404, "Dancing class or couple not found")
+    @api.expect(model_couple, validate=True)
+    @login_required
+    def post(self, dancing_class_id):
+        """Add couple"""
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        couple: Couple = Couple.query.filter(Couple.id == api.payload["couple_id"]).first()
+        if dancing_class and couple:
+            dcp_lead = DancingClassPerson()
+            dcp_lead.dancing_class = dancing_class
+            dcp_lead.person = couple.lead
+            dcp_follow = DancingClassPerson()
+            dcp_follow.dancing_class = dancing_class
+            dcp_follow.person = couple.follow
+            dcc = DancingClassCouple()
+            dcc.person = dcp_lead
+            dcc.partner = dcp_follow
+            db.session.add(dcp_lead)
+            db.session.add(dcp_follow)
+            db.session.add(dcc)
             db.session.commit()
             return dancing_class.json(include_attendees=True)
         return abort(404)
