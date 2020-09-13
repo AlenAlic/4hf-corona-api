@@ -41,6 +41,10 @@ def create_app(config_class=Config):
     # noinspection PyTypeChecker
     register_task_queues(app)
 
+    "Monkey patch for HTTPS Swagger"
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
     return app
 
 
