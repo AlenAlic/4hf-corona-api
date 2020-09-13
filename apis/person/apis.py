@@ -44,10 +44,10 @@ class PersonRoot(Resource):
 
 
 @api.route("/<int:person_id>")
+@api.response(404, "Person not found")
 class PersonSpecific(Resource):
 
     @api.response(200, "Person")
-    @api.response(404, "Person not found")
     @login_required
     def get(self, person_id):
         """Get person"""
@@ -57,7 +57,6 @@ class PersonSpecific(Resource):
         return abort(404)
 
     @api.response(200, "Person")
-    @api.response(404, "Person not found")
     @api.expect(api.model("DancingClass", {
         "first_name": fields.String(required=True),
         "last_name": fields.String(required=True),
@@ -79,7 +78,6 @@ class PersonSpecific(Resource):
         return abort(404)
 
     @api.response(200, "Person")
-    @api.response(404, "Person not found")
     @login_required
     def delete(self, person_id):
         """Delete person"""
