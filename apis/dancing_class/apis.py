@@ -13,6 +13,23 @@ def all_dancing_classes():
     return [d.json() for d in DancingClass.query.order_by(desc(DancingClass.datetime)).all()]
 
 
+model_dancing_class = api.model("DancingClass", {
+    "name": fields.String(required=True),
+    "datetime": fields.DateTime(required=True),
+})
+model_dancing_class_person = api.model("DancingClassPerson", {
+    "person_id": fields.Integer(required=True),
+    "notes": fields.String(required=False),
+})
+model_dancing_class_couple = api.model("DancingClassCouple", {
+    "person_id": fields.Integer(required=True),
+    "partner_id": fields.Integer(required=True),
+})
+model_couple = api.model("Couple", {
+    "couple_id": fields.Integer(required=True),
+})
+
+
 @api.route("/")
 class DancingClassRoot(Resource):
 
@@ -23,10 +40,7 @@ class DancingClassRoot(Resource):
         return all_dancing_classes()
 
     @api.response(200, "All dancing classes")
-    @api.expect(api.model("DancingClass", {
-        "name": fields.String(required=True),
-        "datetime": fields.DateTime(required=True),
-    }), validate=True)
+    @api.expect(model_dancing_class, validate=True)
     @login_required
     def post(self):
         """Create new dancing class"""
@@ -52,10 +66,7 @@ class DancingClassSpecific(Resource):
         return abort(404)
 
     @api.response(200, "Dancing class")
-    @api.expect(api.model("DancingClass", {
-        "name": fields.String(required=True),
-        "datetime": fields.DateTime(required=True),
-    }), validate=True)
+    @api.expect(model_dancing_class, validate=True)
     @login_required
     def put(self, dancing_class_id):
         """Update dancing class"""
@@ -82,12 +93,9 @@ class DancingClassSpecific(Resource):
 @api.route("/<int:dancing_class_id>/add_attendee")
 class DancingClassSpecificAddAttendee(Resource):
 
-    @api.response(200, "Dancing classes")
-    @api.response(404, "Dancing class or Person not found")
-    @api.expect(api.model("DancingClass", {
-        "person_id": fields.Integer(required=True),
-        "notes": fields.String(required=False),
-    }), validate=True)
+    @api.response(200, "Dancing class")
+    @api.response(404, "Dancing class or person not found")
+    @api.expect(model_dancing_class_person, validate=True)
     @login_required
     def post(self, dancing_class_id):
         """Add attendee"""
@@ -108,12 +116,9 @@ class DancingClassSpecificAddAttendee(Resource):
 @api.route("/<int:dancing_class_id>/create_couple")
 class DancingClassSpecificCreateCouple(Resource):
 
-    @api.response(200, "Dancing classes")
+    @api.response(200, "Dancing class")
     @api.response(404, "Dancing class or people not found")
-    @api.expect(api.model("DancingClass", {
-        "person_id": fields.Integer(required=True),
-        "partner_id": fields.Integer(required=True),
-    }), validate=True)
+    @api.expect(model_dancing_class_couple, validate=True)
     @login_required
     def post(self, dancing_class_id):
         """Create couple"""

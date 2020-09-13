@@ -19,6 +19,12 @@ class DancingClass(db.Model, TrackModifications):
     def datetime_string(self):
         return self.datetime.strftime("%d-%m-%Y %H:%M")
 
+    @property
+    def person_ids(self):
+        lead_ids = [c.person.person.id for c in self.couples]
+        follow_ids = [c.partner.person.id for c in self.couples]
+        return lead_ids + follow_ids
+
     def json(self, include_attendees: bool = False):
         data = {
             "id": self.id,
@@ -29,6 +35,6 @@ class DancingClass(db.Model, TrackModifications):
             data.update({
                 "attendees": [p.json() for p in sorted(self.attendees, key=lambda a: a.person.first_name)],
                 "couples": [p.json() for p in sorted(self.couples, key=lambda a: a.person.person.first_name)],
-
+                "person_ids": self.person_ids
             })
         return data
