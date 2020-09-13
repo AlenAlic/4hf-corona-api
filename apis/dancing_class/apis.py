@@ -39,16 +39,43 @@ class DancingClassRoot(Resource):
 
 
 @api.route("/<int:dancing_class_id>")
+@api.response(404, "Dancing class not found")
 class DancingClassSpecific(Resource):
 
-    @api.response(200, "Dancing classes")
-    @api.response(404, "Dancing class not found")
+    @api.response(200, "Dancing class")
     @login_required
     def get(self, dancing_class_id):
         """Get dancing class"""
         dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
         if dancing_class:
             return dancing_class.json(include_attendees=True)
+        return abort(404)
+
+    @api.response(200, "Dancing class")
+    @api.expect(api.model("DancingClass", {
+        "name": fields.String(required=True),
+        "datetime": fields.DateTime(required=True),
+    }), validate=True)
+    @login_required
+    def put(self, dancing_class_id):
+        """Update dancing class"""
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        if dancing_class:
+            dancing_class.name = api.payload["name"]
+            dancing_class.datetime = datetime_parser.parse(api.payload["datetime"])
+            db.session.commit()
+            return dancing_class.json()
+        return abort(404)
+
+    @api.response(200, "Dancing class deleted")
+    @login_required
+    def delete(self, dancing_class_id):
+        """Delete dancing class"""
+        dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+        if dancing_class:
+            db.session.delete(dancing_class)
+            db.session.commit()
+            return
         return abort(404)
 
 
