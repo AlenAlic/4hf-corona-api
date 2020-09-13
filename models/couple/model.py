@@ -20,7 +20,14 @@ class Couple(db.Model, TrackModifications):
     def json(self):
         data = {
             "id": self.id,
-            "lead": self.lead.json(),
-            "follow": self.follow.json(),
+            "lead": {
+                "id": self.lead.id,
+                "full_name": self.lead.full_name,
+            },
+            "follow": {
+                "id": self.follow.id,
+                "full_name": self.follow.full_name,
+            },
+            "couple": f"{self.lead.full_name} & {self.follow.full_name}"
         }
         return data
