@@ -140,6 +140,7 @@ class DancingClassSpecificAddCouple(Resource):
                 dcp_follow.person = couple.follow
                 db.session.add(dcp_follow)
             dcc = DancingClassCouple()
+            dcc.dancing_class = dancing_class
             dcc.person = dcp_lead
             dcc.partner = dcp_follow
             db.session.add(dcc)
