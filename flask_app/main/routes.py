@@ -25,8 +25,11 @@ def index():
             if user.is_active and (user.is_admin or user.is_board):
                 login_user(user)
                 return redirect(url_for("main.dashboard"))
-            else:
+            elif not user.is_active:
                 flash("Account inactive", "warning")
+                return redirect(url_for("main.index"))
+            else:
+                flash("Not enough privileges to log in to the API", "warning")
                 return redirect(url_for("main.index"))
     return render_template("main/index.html", login_form=form)
 
