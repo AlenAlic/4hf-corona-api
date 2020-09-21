@@ -4,7 +4,7 @@ from models import TrackModifications
 from models.base import get_token_from_request
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
-from .constants import ACCESS_ADMIN, ACCESS_USER
+from .constants import ACCESS_ADMIN, ACCESS_BOARD, ACCESS_USER
 from werkzeug.security import generate_password_hash, check_password_hash
 from constants import SECONDS_DAY, SECONDS_QUARTER
 from jwt import encode, decode
@@ -18,6 +18,10 @@ class Anonymous(AnonymousUserMixin):
 
     @hybrid_property
     def is_admin(self):
+        return False
+
+    @hybrid_property
+    def is_board(self):
         return False
 
     @property
@@ -101,6 +105,10 @@ class User(UserMixin, db.Model, TrackModifications, Anonymous):
     @hybrid_property
     def is_admin(self):
         return self.access == ACCESS_ADMIN
+
+    @hybrid_property
+    def is_board(self):
+        return self.access == ACCESS_BOARD
 
     @property
     def full_name(self):

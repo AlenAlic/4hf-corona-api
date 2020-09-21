@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-12">
+        <form method="POST" enctype="multipart/form-data">
+            <h3 class="mb-4">Invoice settings</h3>
+            {{ form.hidden_tag() }}
+            {{ forms.form_field(form.first_name) }}
+            {{ forms.form_field(form.last_name) }}
+            {{ forms.form_field(form.email) }}
+            {{ forms.form_field(form.submit, class_="float-right") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

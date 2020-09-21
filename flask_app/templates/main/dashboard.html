@@ -5,8 +5,15 @@
     {% with url=url_for("admin.index"), title="Database", image="db.png" %}
         {% include "_dashboard_page.html" %}
     {% endwith %}
-    {% with url=url_for("email.index"), title="E-mails", image="email.png" %}
-        {% include "_dashboard_page.html" %}
-    {% endwith %}
+    {% if current_user.is_admin or current_user.is_board %}
+        {% with url=url_for("main.users"), title="Add user", image="users.png" %}
+            {% include "_dashboard_page.html" %}
+        {% endwith %}
+    {% endif %}
+    {% if current_user.is_admin %}
+        {% with url=url_for("email.index"), title="E-mails", image="email.png" %}
+            {% include "_dashboard_page.html" %}
+        {% endwith %}
+    {% endif %}
 </div>
 {% endblock %}
