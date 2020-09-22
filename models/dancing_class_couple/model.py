@@ -11,13 +11,13 @@ class DancingClassCouple(db.Model, TrackModifications):
     id = db.Column(db.Integer(), primary_key=True)
     dancing_class_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS}.id", ondelete="CASCADE"),
                                  nullable=False)
-    dancing_class = db.relationship("DancingClass")
+    dancing_class = db.relationship("DancingClass", lazy=False)
     person_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"),
                           nullable=False)
-    person = db.relationship("DancingClassPerson", foreign_keys=person_id)
+    person = db.relationship("DancingClassPerson", foreign_keys=person_id, lazy=False)
     partner_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"),
                            nullable=False)
-    partner = db.relationship("DancingClassPerson", foreign_keys=partner_id)
+    partner = db.relationship("DancingClassPerson", foreign_keys=partner_id, lazy=False)
 
     def __repr__(self):
         return f"{self.person} - {self.partner}"

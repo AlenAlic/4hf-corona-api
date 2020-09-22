@@ -10,8 +10,8 @@ class Person(db.Model, TrackModifications):
     first_name = db.Column(db.String(128), nullable=False)
     last_name = db.Column(db.String(128), nullable=False)
     student_number = db.Column(db.String(16), nullable=True)
-    dancing_classes = db.relationship("DancingClass", secondary=TABLE_DANCING_CLASS_PERSON)
-    dancing_class_persons = db.relationship("DancingClassPerson", cascade="all, delete, delete-orphan")
+    dancing_classes = db.relationship("DancingClass", secondary=TABLE_DANCING_CLASS_PERSON, lazy=False)
+    dancing_class_persons = db.relationship("DancingClassPerson", cascade="all, delete, delete-orphan", lazy=False)
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name} ({self.email})"
