@@ -32,10 +32,11 @@ class Anonymous(AnonymousUserMixin):
     def profile(self):
         return {}
 
+    def json(self):
+        return self.profile
 
-@login.request_loader
-def load_user(req):
-    data = get_token_from_request(req)
+
+def get_user_from_token_data(data):
     if data is not None:
         try:
             user_id = data["id"]
@@ -44,6 +45,11 @@ def load_user(req):
         except (InvalidTokenError, AttributeError, KeyError):
             return None
     return None
+
+
+@login.request_loader
+def load_user(req):
+    return get_user_from_token_data(get_token_from_request(req))
 
 
 @login.user_loader
@@ -145,6 +151,3 @@ class User(UserMixin, db.Model, TrackModifications, Anonymous):
             "iat": time(),
             "exp": time() + expires_in,
         }, current_app.config["SECRET_KEY"], algorithm="HS256").decode("utf-8")
-
-    def json(self):
-        return self.profile
