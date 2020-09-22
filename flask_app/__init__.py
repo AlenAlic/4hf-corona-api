@@ -58,7 +58,7 @@ def configure_extensions(app):
     login.anonymous_user = Anonymous
     admin.init_app(app, db)
     mail.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
+    cors.init_app(app)
     socket.init_app(app)
     commands.init_app(app)
 
