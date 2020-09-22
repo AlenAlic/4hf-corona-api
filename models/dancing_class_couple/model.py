@@ -9,11 +9,14 @@ class DancingClassCouple(db.Model, TrackModifications):
         db.UniqueConstraint("dancing_class_id", "person_id", "partner_id", name="_dancing_class_couple_uc"),
     )
     id = db.Column(db.Integer(), primary_key=True)
-    dancing_class_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS}.id", ondelete="CASCADE"))
+    dancing_class_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS}.id", ondelete="CASCADE"),
+                                 nullable=False)
     dancing_class = db.relationship("DancingClass")
-    person_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"))
+    person_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"),
+                          nullable=False)
     person = db.relationship("DancingClassPerson", foreign_keys=person_id)
-    partner_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"))
+    partner_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS_PERSON}.id", ondelete="CASCADE"),
+                           nullable=False)
     partner = db.relationship("DancingClassPerson", foreign_keys=partner_id)
 
     def __repr__(self):

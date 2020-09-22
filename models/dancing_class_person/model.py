@@ -7,9 +7,10 @@ class DancingClassPerson(db.Model, TrackModifications):
     __tablename__ = TABLE_DANCING_CLASS_PERSON
     __table_args__ = (db.UniqueConstraint("dancing_class_id", "person_id", name="_dancing_class_person_uc"),)
     id = db.Column(db.Integer(), primary_key=True)
-    dancing_class_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS}.id", ondelete="CASCADE"))
+    dancing_class_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_DANCING_CLASS}.id", ondelete="CASCADE"),
+                                 nullable=False)
     dancing_class = db.relationship("DancingClass")
-    person_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_PERSON}.id", ondelete="CASCADE"))
+    person_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_PERSON}.id", ondelete="CASCADE"), nullable=False)
     person = db.relationship("Person")
     passed_triage = db.Column(db.Boolean, nullable=False, default=True)
     notes = db.Column(db.String(256), nullable=True)
