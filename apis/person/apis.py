@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields, abort
 from models import login_required
 from models import Person
 from ext import db
+from sqlalchemy.orm import joinedload
 
 
 api = Namespace("person", description="People")
@@ -9,7 +10,8 @@ api = Namespace("person", description="People")
 
 def all_persons(include_active_partners=False):
     return [
-        p.json(include_active_partners=include_active_partners) for p in Person.query.order_by(Person.first_name).all()
+        p.json(include_active_partners=include_active_partners) for p in
+        Person.query.options(joinedload("dancing_class_persons")).order_by(Person.first_name).all()
     ]
 
 
