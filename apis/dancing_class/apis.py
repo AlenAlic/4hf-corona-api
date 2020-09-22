@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields, abort
-from models import login_required
+from models import login_required, requires_access_level
+from models.user.constants import ACCESS_ADMIN, ACCESS_BOARD
 from models import DancingClass, Person, DancingClassPerson, DancingClassCouple, Couple
 from ext import db
 import dateutil.parser as datetime_parser
@@ -80,6 +81,7 @@ class DancingClassSpecific(Resource):
 
     @api.response(200, "Dancing class deleted")
     @login_required
+    @requires_access_level(ACCESS_ADMIN, ACCESS_BOARD)
     def delete(self, dancing_class_id):
         """Delete dancing class"""
         dancing_class: DancingClass = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
