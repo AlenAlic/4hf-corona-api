@@ -10,9 +10,9 @@ class Couple(db.Model, TrackModifications):
     )
     id = db.Column(db.Integer(), primary_key=True)
     lead_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_PERSON}.id", ondelete="CASCADE"))
-    lead = db.relationship("Person", foreign_keys=lead_id, lazy=False)
+    lead = db.relationship("Person", foreign_keys=lead_id)
     follow_id = db.Column(db.Integer(), db.ForeignKey(f"{TABLE_PERSON}.id", ondelete="CASCADE"))
-    follow = db.relationship("Person", foreign_keys=follow_id, lazy=False)
+    follow = db.relationship("Person", foreign_keys=follow_id)
 
     def __repr__(self):
         return f"{self.lead}-{self.follow}"
