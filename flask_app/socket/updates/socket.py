@@ -97,3 +97,14 @@ def dancing_class_deleted(dancing_class_id):
         room=ROOM,
         include_self=False
     )
+
+
+@socket_io.on("update_dancing_class")
+def update_dancing_class(dancing_class_id):
+    dancing_class = DancingClass.query.filter(DancingClass.id == dancing_class_id).first()
+    emit(
+        "update_dancing_class",
+        dancing_class.json(include_attendees=True),
+        room=ROOM,
+        include_self=False
+    )
