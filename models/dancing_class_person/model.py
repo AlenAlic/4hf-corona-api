@@ -14,8 +14,10 @@ class DancingClassPerson(db.Model, TrackModifications):
     person = db.relationship("Person")
     passed_triage = db.Column(db.Boolean, nullable=False, default=True)
     notes = db.Column(db.String(256), nullable=True)
-    dancing_class_couples_leads = db.relationship("DancingClassCouple", foreign_keys="DancingClassCouple.person_id")
-    dancing_class_couples_follows = db.relationship("DancingClassCouple", foreign_keys="DancingClassCouple.partner_id")
+    dancing_class_couples_leads = db.relationship("DancingClassCouple", foreign_keys="DancingClassCouple.person_id",
+                                                  cascade="all, delete, delete-orphan")
+    dancing_class_couples_follows = db.relationship("DancingClassCouple", foreign_keys="DancingClassCouple.partner_id",
+                                                    cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"{self.person} - {self.dancing_class}"
