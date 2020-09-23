@@ -1,3 +1,4 @@
+import eventlet
 from flask import Flask
 from flask_login import current_user
 from ext import db, migrate, login, mail, cors
