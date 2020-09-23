@@ -18,11 +18,11 @@ def init_app(app):
 
 @socket_io.on("connect")
 def test_connect():
-    # token = request.args.get("token", None)
-    # if token:
-    #     user = get_user_from_token_data(decode_token(token))
-    #     if user:
-    join_room(ROOM)
+    token = request.args.get("token", None)
+    if token:
+        user = get_user_from_token_data(decode_token(token))
+        if user:
+            join_room(ROOM)
 
 
 @socket_io.on("disconnect")
