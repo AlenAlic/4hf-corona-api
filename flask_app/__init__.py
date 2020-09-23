@@ -39,7 +39,7 @@ def create_app(config_class=Config):
 
     # Background tasks
     # noinspection PyTypeChecker
-    register_task_queues(app)
+    # register_task_queues(app)
 
     return app
 
@@ -58,7 +58,7 @@ def configure_extensions(app):
     login.anonymous_user = Anonymous
     admin.init_app(app, db)
     mail.init_app(app)
-    cors.init_app(app, resources={r"/*": {"origins": "https://4hfcorona.alenalic.nl"}})
+    cors.init_app(app, resources={r"/*": {"origins": app.config["ALLOWED_URLS"]}}, supports_credentials=True)
     socket.init_app(app)
     commands.init_app(app)
 
