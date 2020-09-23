@@ -13,7 +13,7 @@ socket_io = SocketIO()
 def init_app(app):
     from .test import socket as test
     from .updates import socket as updates
-    socket_io.init_app(app, cors_allowed_origins=app.config["ALLOWED_URLS"])
+    socket_io.init_app(app, cors_allowed_origins=app.config["ALLOWED_URLS"], engineio_logger=True)
 
 
 @socket_io.on("connect")
