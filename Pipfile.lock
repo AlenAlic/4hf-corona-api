@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b0ecb55e689c6d64baa3caa2be149dfbc078efa7a7f9134fdb80d4f802123be6"
+            "sha256": "17b6064972a2758cb7d5c807ea5a51550f2c90a209510f0882a664a0401241b9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -203,11 +203,11 @@
         },
         "flask-socketio": {
             "hashes": [
-                "sha256:115fd346e3cec456d9c23ec5f44a7863b543503a8a0628846b072cfec88c57b7",
-                "sha256:e1d84049449b953e6d583a268532695cbdf4d4aebb9bb98fa4906e3f8bb53d4f"
+                "sha256:2172dff1e42415ba480cee02c30c2fc833671ff326f1598ee3d69aa02cf768ec",
+                "sha256:7ff5b2f5edde23e875a8b0abf868584e5706e11741557449bc5147df2cd78268"
             ],
             "index": "pypi",
-            "version": "==4.1.1"
+            "version": "==4.2.1"
         },
         "flask-sqlalchemy": {
             "hashes": [
@@ -410,19 +410,19 @@
         },
         "python-engineio": {
             "hashes": [
-                "sha256:4850c3e04b2040e4fd262d1047797473d1815b37a073807e7b80304c1c5f4848",
-                "sha256:89b90ee3816ed440c68ac7b6143244ae7d56a46a49295fbac8e6696482e596d1"
+                "sha256:222926adb4bc6e03a8fc8e0ef2a3309f030c1c3f8e0fcc94c9ba214574565f02",
+                "sha256:2481732d93646998f7372ef0ecf003af7817b82720b881db173c3d50b4887916"
             ],
             "index": "pypi",
-            "version": "==3.8.2.post1"
+            "version": "==3.12.1"
         },
         "python-socketio": {
             "hashes": [
-                "sha256:881386203122dd2d49e891934ff9a46b9977344a058883ddfdca18d02ac1257f",
-                "sha256:d9e7e19f068c136233e5573f5ef38d15cbebf059d6e5f4ab081d6e9e987af824"
+                "sha256:149b98c33f8c3d09273fb4ebeb83781e4dc9411b56b27d9f058bec1bd1ed74b7",
+                "sha256:81280cbbb7018d8ecdd006bf6025979733d347c0f2612282c1e21f6ed7d3b55b"
             ],
             "index": "pypi",
-            "version": "==4.2.1"
+            "version": "==4.5.1"
         },
         "pytz": {
             "hashes": [
