@@ -37,10 +37,6 @@ def create_app(config_class=Config):
     # Register blueprints, API, and sockets
     register_blueprints(app)
 
-    # Background tasks
-    # noinspection PyTypeChecker
-    # register_task_queues(app)
-
     return app
 
 
@@ -75,14 +71,3 @@ def register_blueprints(app):
 
     import apis
     apis.init_app(app)
-
-
-def register_task_queues(app):
-    from redis import Redis
-    import rq
-
-    queues = app.config["RQ_WORKERS"]
-    app.redis = Redis.from_url(app.config["REDIS_URL"])
-    app.task_queues = {
-        queue: rq.Queue(queue, connection=app.redis, decode_responses=True) for queue in queues
-    }
